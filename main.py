@@ -13,7 +13,6 @@ FEISHU_WEBHOOK_URL = os.getenv('FEISHU_WEBHOOK_URL')
 FEISHU_SIGNING_KEY = os.getenv('FEISHU_SIGNING_KEY')  # 签名密钥
 NEWS_API_KEY = os.getenv('NEWS_API_KEY')
 
-# https://newsapi.org/docs/endpoints/everything
 NEWS_API_URL = 'https://newsapi.org/v2/everything'
 
 current_time = datetime.now()
@@ -21,10 +20,12 @@ yesterday = (current_time - timedelta(days=1)).strftime('%Y-%m-%d')
 
 
 def get_tech_news() -> List[Tuple[str, str, str]]:
+    # https://newsapi.org/docs/endpoints/everything
+
     params = {
-        'q': 'tech',
+        'q': '科技 OR 技术 OR IT OR 互联网 OR AI OR 人工智能',
         'language': 'zh',
-        'sortBy': 'popularity',
+        'sortBy': 'relevancy',
         'pageSize': '15',
         'from': yesterday,
         'to': yesterday,
@@ -53,7 +54,21 @@ def get_tech_news() -> List[Tuple[str, str, str]]:
         url = article.get('url', '')
         news_list.append((title, description, url))
 
-    return news_list
+    return filter_tech_news(news_list)
+
+
+def filter_tech_news(news_list: List[Tuple[str, str, str]]) -> List[Tuple[str, str, str]]:
+    # 用于进一步筛选的科技关键词列表
+    tech_keywords = ['科技', '技术', '互联网', 'AI', '人工智能', 'IT', '软件', '硬件']
+
+    filtered_news = [
+        article for article in news_list
+        # 检查每篇文章的标题或描述中是否包含任一科技关键词
+        if any(keyword in article[0] or keyword in article[1] for keyword in tech_keywords)
+    ]
+
+    print(f"共找到 {len(filtered_news)} 条符合条件的资讯：")
+    return filtered_news
 
 
 def calculate_signature(timestamp: str, secret: str) -> str:
