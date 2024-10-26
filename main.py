@@ -5,8 +5,8 @@ import time
 import hashlib
 import base64
 import hmac
-from datetime import datetime, timedelta
-from typing import Tuple, List
+from datetime import datetime, timedelta, timezone
+from typing import Any, List, Dict
 
 # 环境变量获取
 FEISHU_WEBHOOK_URL = os.getenv('FEISHU_WEBHOOK_URL')
@@ -15,13 +15,16 @@ NEWS_API_KEY = os.getenv('NEWS_API_KEY')
 
 NEWS_API_URL = 'https://newsapi.org/v2/everything'
 
-current_time = datetime.now()
+# 获取当前时间，并设置为本地时区
+current_time = datetime.now(timezone.utc).astimezone()
+# 格式化为 年-月-日 时:分:秒 时区格式
+print(current_time.strftime('%Y-%m-%d %H:%M:%S %Z %z'))
 yesterday = (current_time - timedelta(days=1)).strftime('%Y-%m-%d')
 
 
-def get_tech_news() -> List[Tuple[str, str, str]]:
+def get_tech_news() -> List[Dict[str, str]]:
     # https://newsapi.org/docs/endpoints/everything
-
+    
     params = {
         'q': '科技 OR 技术 OR IT OR 互联网 OR AI OR 人工智能',
         'language': 'zh',
@@ -49,22 +52,26 @@ def get_tech_news() -> List[Tuple[str, str, str]]:
     news_list = []
 
     for article in articles:
-        title = article.get('title', '无标题')
-        description = article.get('description', '无描述')
-        url = article.get('url', '')
-        news_list.append((title, description, url))
+        news_item = {
+            'title': article.get('title', '无标题'),
+            'description': article.get('description', '无描述'),
+            'url': article.get('url', ''),
+            'urlToImage': article.get('urlToImage', ''),
+            'publishedAt': article.get('publishedAt', '')
+        }
+        news_list.append(news_item)
 
     return filter_tech_news(news_list)
 
 
-def filter_tech_news(news_list: List[Tuple[str, str, str]]) -> List[Tuple[str, str, str]]:
+def filter_tech_news(news_list: List[Dict[str, str]]) -> List[Dict[str, str]]:
     # 用于进一步筛选的科技关键词列表
     tech_keywords = ['科技', '技术', '互联网', 'AI', '人工智能', 'IT', '软件', '硬件']
 
     filtered_news = [
         article for article in news_list
         # 检查每篇文章的标题或描述中是否包含任一科技关键词
-        if any(keyword in article[0] or keyword in article[1] for keyword in tech_keywords)
+        if any(keyword in article['title'] or keyword in article['description'] for keyword in tech_keywords)
     ]
 
     print(f"共找到 {len(filtered_news)} 条符合条件的资讯：")
@@ -79,7 +86,7 @@ def calculate_signature(timestamp: str, secret: str) -> str:
     return base64.b64encode(hmac_code).decode('utf-8')
 
 
-def send_news_to_feishu(news_list: List[Tuple[str, str, str]]) -> dict:
+def send_news_to_feishu(news_list: List[Dict[str, str]]) -> Dict[str, Any]:
     # 获取当前时间戳
     timestamp = str(int(time.time()))
     # 计算签名
@@ -92,8 +99,8 @@ def send_news_to_feishu(news_list: List[Tuple[str, str, str]]) -> dict:
         [
             {
                 "tag": "a",
-                "text": f"📢 {news[0]}",
-                "href": news[2]
+                "text": f"📢 {news['title']}",
+                "href": news['url']
             }
         ] for news in news_list
     ]
@@ -112,15 +119,22 @@ def send_news_to_feishu(news_list: List[Tuple[str, str, str]]) -> dict:
         }
     }
     response = requests.post(FEISHU_WEBHOOK_URL, headers=headers, data=json.dumps(data))
+    full_url = response.request.url
+    print(full_url)
+    print(f'请求方法: {response.request.method}')
+    print(json.dumps(response.json(), ensure_ascii=False, indent=2))  # 打印标准 JSON 格式
+
     return response.json()
 
 
 def main():
     tech_news = get_tech_news()
     for news in tech_news:
-        print(f'📢 {news[0]}')
-        print(f'📝 {news[1]}')
-        print(f'📎 {news[2]}')
+        print(f'📢 {news["title"]}')
+        print(f'📝 {news["description"]}')
+        print(f'📎 {news["url"]}')
+        print(f'🖼️  {news["urlToImage"]}')
+        print(f'🕛 {news["publishedAt"]}')
         print()
 
     if tech_news:
