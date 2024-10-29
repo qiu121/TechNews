@@ -8,6 +8,9 @@ import hmac
 from datetime import datetime, timedelta, timezone
 from typing import Any, List, Dict
 
+from newsapi import NewsApiClient
+from newsapi.newsapi_exception import NewsAPIException
+
 # 环境变量获取
 FEISHU_WEBHOOK_URL = os.getenv('FEISHU_WEBHOOK_URL')
 FEISHU_SIGNING_KEY = os.getenv('FEISHU_SIGNING_KEY')  # 签名密钥
@@ -21,24 +24,25 @@ current_time = datetime.now(timezone.utc).astimezone()
 print(current_time.strftime('%Y-%m-%d %H:%M:%S %Z %z'))
 yesterday = (current_time - timedelta(days=1)).strftime('%Y-%m-%d')
 
+newsapi = NewsApiClient(api_key=NEWS_API_KEY)
+
 
 def get_tech_news() -> List[Dict[str, str]]:
     # https://newsapi.org/docs/endpoints/everything
-    
-    params = {
-        'q': '科技 OR 技术 OR IT OR 互联网 OR AI OR 人工智能',
-        'language': 'zh',
-        'sortBy': 'relevancy',
-        'pageSize': '15',
-        'from': yesterday,
-        'to': yesterday,
-        'apiKey': NEWS_API_KEY
-    }
-    response = requests.get(NEWS_API_URL, params=params)
-    full_url = response.request.url
-    print(full_url)
-
-    data = response.json()
+    try:
+        data = newsapi.get_everything(q='科技 OR 技术 OR IT OR 互联网 OR AI OR 人工智能',
+                                      from_param=yesterday,
+                                      to=yesterday,
+                                      language='zh',
+                                      sort_by='relevancy',
+                                      page_size=15
+                                      )
+        # print(json.dumps(data, ensure_ascii=False, indent=2))  # 打印标准 JSON 格式
+    except NewsAPIException as e:
+        err_data = e.args[0]
+        print("🚫 API 请求错误:")
+        print(json.dumps(err_data, ensure_ascii=False, indent=2))  # 打印标准 JSON 格式
+        return []
 
     # 检查 API 响应状态
     if data.get('status') != 'ok':
@@ -120,7 +124,7 @@ def send_news_to_feishu(news_list: List[Dict[str, str]]) -> Dict[str, Any]:
     }
     response = requests.post(FEISHU_WEBHOOK_URL, headers=headers, data=json.dumps(data))
     full_url = response.request.url
-    print(full_url)
+    print(f'📎 {full_url}')
     print(f'请求方法: {response.request.method}')
     print(json.dumps(response.json(), ensure_ascii=False, indent=2))  # 打印标准 JSON 格式
 
