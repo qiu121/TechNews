@@ -35,6 +35,8 @@ jobs:
         env:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
           FEISHU_SIGNING_KEY: ${{ secrets.FEISHU_SIGNING_KEY }}
+          FEISHU_AI_WEBHOOK_URL: ${{ secrets.FEISHU_AI_WEBHOOK_URL }}
+          FEISHU_AI_SIGNING_KEY: ${{ secrets.FEISHU_AI_SIGNING_KEY }}
           
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}  
 
