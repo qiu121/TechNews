@@ -70,7 +70,8 @@ def get_tech_news() -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
 def filter_news(news_list: List[Dict[str, str]]) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
     """过滤新闻，根据科技和AI关键字分组"""
     tech_keywords = ['科技', '技术', '互联网', 'IT', '软件']
-    ai_keywords = ['AI', '人工智能']
+    ai_keywords = ['AI', '人工智能', 'AGI', 'AIGC', '机器学习', '深度学习', '自然语言处理', '计算机视觉', '自动驾驶',
+                   '生成式AI', '大模型', '智能体', '算法', '强化学习', '神经网络', 'GPT', 'Transformer']
 
     def filter_articles(keywords: List[str], exclude_keywords: List[str]) -> List[Dict[str, str]]:
         filtered_articles = [
