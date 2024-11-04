@@ -1,0 +1,10 @@
+# 环境变量获取
+import os
+
+FEISHU_WEBHOOK_URL = os.getenv('FEISHU_WEBHOOK_URL', '')
+FEISHU_SIGNING_KEY = os.getenv('FEISHU_SIGNING_KEY', '')
+
+FEISHU_AI_WEBHOOK_URL = os.getenv('FEISHU_AI_WEBHOOK_URL', '')
+FEISHU_AI_SIGNING_KEY = os.getenv('FEISHU_AI_SIGNING_KEY', '')
+
+NEWS_API_KEY = os.getenv('NEWS_API_KEY', '')

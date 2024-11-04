@@ -1,0 +1,8 @@
+from .settings import (
+    FEISHU_WEBHOOK_URL,
+    FEISHU_SIGNING_KEY,
+    FEISHU_AI_WEBHOOK_URL,
+    FEISHU_AI_SIGNING_KEY,
+
+    NEWS_API_KEY
+)
