@@ -8,14 +8,22 @@ def filter_news(news_list: List[Dict[str, str]]) -> Tuple[List[Dict[str, str]], 
                    '生成式AI', '大模型', '智能体', '算法', '强化学习', '神经网络', 'GPT', 'Transformer']
 
     def filter_articles(keywords: List[str], exclude_keywords: List[str]) -> List[Dict[str, str]]:
-        filtered_articles = [
-            article for article in news_list if
-            any(keyword in (article.get('title') or '') or keyword in (article.get('description') or '')
-                for keyword in keywords)
-            and not
-            any(exclude_keyword in (article.get('title') or '') or exclude_keyword in (article.get('description') or '')
-                for exclude_keyword in exclude_keywords)
-        ]
+        """过滤符合条件的新闻文章"""
+        filtered_articles = []
+        for article in news_list:
+            # 获取标题和描述，处理 None 值
+            title = article.get('title') or ''
+            description = article.get('description') or ''
+
+            # 判断是否包含关键字或排除关键字
+            matches_keywords = any(keyword in title or keyword in description for keyword in keywords)
+            matches_exclude = any(exclude_keyword in title or exclude_keyword in description
+                                  for exclude_keyword in exclude_keywords)
+
+            # 满足条件时，将文章添加到结果列表
+            if matches_keywords and not matches_exclude:
+                filtered_articles.append(article)
+
         return filtered_articles
 
     # 过滤新闻
