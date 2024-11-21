@@ -90,7 +90,7 @@ python main.py
 
 - `config/settings.py`：从环境变量加载配置
 - `news/fetcher.py`：从 NewsAPI 获取新闻数据
-- `news/fetcher.py`：过滤科技和 AI 资讯
+- `news/filter.py`：过滤资讯
 - `feishu/sender.py`：将筛选后的新闻推送至飞书
 - `feishu/signature.py`：计算飞书 Webhook 所需签名
 
