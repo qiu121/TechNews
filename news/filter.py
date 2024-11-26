@@ -1,5 +1,13 @@
 from typing import List, Dict, Tuple
 
+import Levenshtein
+
+
+def is_similar(title1: str, title2: str, threshold: float = 0.55) -> bool:
+    """判断两个标题是否相似"""
+    similarity_ratio = Levenshtein.ratio(title1, title2)
+    return similarity_ratio >= threshold
+
 
 def filter_news(news_list: List[Dict[str, str]]) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
     """过滤新闻，根据科技和AI关键字分组"""
@@ -10,6 +18,8 @@ def filter_news(news_list: List[Dict[str, str]]) -> Tuple[List[Dict[str, str]], 
     def filter_articles(keywords: List[str], exclude_keywords: List[str]) -> List[Dict[str, str]]:
         """过滤符合条件的新闻文章"""
         filtered_articles = []
+        seen_titles = []  # 存储已处理文章的标题
+
         for article in news_list:
             # 获取标题和描述，处理 None 值
             title = article.get('title') or ''
@@ -20,9 +30,17 @@ def filter_news(news_list: List[Dict[str, str]]) -> Tuple[List[Dict[str, str]], 
             matches_exclude = any(exclude_keyword in title or exclude_keyword in description
                                   for exclude_keyword in exclude_keywords)
 
-            # 满足条件时，将文章添加到结果列表
-            if matches_keywords and not matches_exclude:
+            # 判断标题是否与已添加的文章相似
+            is_duplicate = False
+            for seen_title in seen_titles:
+                if is_similar(title, seen_title):
+                    is_duplicate = True
+                    continue  # 跳过当前重复标题，继续检查剩余标题
+
+            # 满足条件且标题不重复时，将文章添加到结果列表
+            if matches_keywords and not matches_exclude and not is_duplicate:
                 filtered_articles.append(article)
+                seen_titles.append(title)  # 记录已处理标题
 
         return filtered_articles
 

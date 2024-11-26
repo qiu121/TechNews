@@ -1,2 +1,3 @@
 requests~=2.32.3
 newsapi-python==0.2.7
+python_Levenshtein==0.26.1
