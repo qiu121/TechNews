@@ -20,11 +20,11 @@ newsapi = NewsApiClient(api_key=NEWS_API_KEY)
 def get_tech_news() -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
     # https://newsapi.org/docs/endpoints/everything
     try:
-        data = newsapi.get_everything(q='科技 OR 技术 OR IT OR 互联网 OR 软件 OR AI OR 人工智能',
+        data = newsapi.get_everything(q='科技 OR IT OR 互联网 OR AI OR 人工智能',
                                       from_param=yesterday,
                                       to=yesterday,
                                       language='zh',
-                                      sort_by='popularity')
+                                      sort_by='relevancy')
     except NewsAPIException as e:
         err_data = e.args[0]
         print("🚫 API 请求错误:")
