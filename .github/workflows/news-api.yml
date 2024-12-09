@@ -1,4 +1,4 @@
-name: Daily News to Feishu
+name: Daily News
 
 on:
   schedule:
@@ -37,6 +37,11 @@ jobs:
           FEISHU_SIGNING_KEY: ${{ secrets.FEISHU_SIGNING_KEY }}
           FEISHU_AI_WEBHOOK_URL: ${{ secrets.FEISHU_AI_WEBHOOK_URL }}
           FEISHU_AI_SIGNING_KEY: ${{ secrets.FEISHU_AI_SIGNING_KEY }}
-          
+
+          DINGTALK_WEBHOOK_URL : ${{ secrets.DINGTALK_WEBHOOK_URL }}
+          DINGTALK_SIGNING_KEY : ${{ secrets.DINGTALK_SIGNING_KEY }}
+          DINGTALK_AI_WEBHOOK_URL : ${{ secrets.DINGTALK_AI_WEBHOOK_URL }}
+          DINGTALK_AI_SIGNING_KEY : ${{ secrets.DINGTALK_AI_SIGNING_KEY }}
+
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}  
 

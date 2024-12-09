@@ -1,5 +1,8 @@
 from config import (FEISHU_WEBHOOK_URL, FEISHU_SIGNING_KEY,
-                    FEISHU_AI_SIGNING_KEY, FEISHU_AI_WEBHOOK_URL)
+                    FEISHU_AI_SIGNING_KEY, FEISHU_AI_WEBHOOK_URL,
+                    DINGTALK_WEBHOOK_URL, DINGTALK_SIGNING_KEY,
+                    DINGTALK_AI_WEBHOOK_URL, DINGTALK_AI_SIGNING_KEY)
+from dingtalk import send_to_dingtalk
 from news import get_tech_news
 from feishu import send_news
 
@@ -22,11 +25,13 @@ def main():
     if tech_news:
         pass
         send_news(tech_news, FEISHU_WEBHOOK_URL, FEISHU_SIGNING_KEY, "🌐 今日科技资讯")
+        send_to_dingtalk(tech_news, DINGTALK_WEBHOOK_URL, DINGTALK_SIGNING_KEY, "🌐 今日科技资讯")
 
     # 推送AI资讯到另一个飞书机器人
     if ai_news:
         pass
         send_news(ai_news, FEISHU_AI_WEBHOOK_URL, FEISHU_AI_SIGNING_KEY, "🤖 今日AI资讯")
+        send_to_dingtalk(ai_news, DINGTALK_AI_WEBHOOK_URL, DINGTALK_AI_SIGNING_KEY, "🤖 今日AI资讯")
 
 
 if __name__ == "__main__":
