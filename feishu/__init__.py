@@ -1,1 +1,1 @@
-from .sender import send_news
+from .sender import send_to_feishu

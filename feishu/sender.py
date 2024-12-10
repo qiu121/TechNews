@@ -6,7 +6,7 @@ from .signature import calculate_signature
 import requests
 
 
-def send_news(news_list: List[Dict[str, str]],
+def send_to_feishu(news_list: List[Dict[str, str]],
               webhook_url: str, signing_key: str, title: str) -> Dict[str, Any]:
     try:
         # 获取当前时间戳
