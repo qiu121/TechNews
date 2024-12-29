@@ -31,7 +31,7 @@ jobs:
       - name: Run script (AI)
         run: |
           source .venv/bin/activate
-          python main.py
+          python run_ai_news.py
         env:
           FEISHU_AI_WEBHOOK_URL: ${{ secrets.FEISHU_AI_WEBHOOK_URL }}
           FEISHU_AI_SIGNING_KEY: ${{ secrets.FEISHU_AI_SIGNING_KEY }}
