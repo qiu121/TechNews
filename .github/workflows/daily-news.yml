@@ -1,0 +1,43 @@
+name: Daily News (Non-AI)
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 时间 0 点运行
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  send_news_api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # 确保检出代码
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Set up virtual environment
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+
+      - name: Install dependencies
+        run: |
+          source .venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Run script (Non-AI)
+        run: |
+          source .venv/bin/activate
+          python main.py
+        env:
+          FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+          FEISHU_SIGNING_KEY: ${{ secrets.FEISHU_SIGNING_KEY }}
+
+          DINGTALK_WEBHOOK_URL: ${{ secrets.DINGTALK_WEBHOOK_URL }}
+          DINGTALK_SIGNING_KEY: ${{ secrets.DINGTALK_SIGNING_KEY }}
+
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}  
+
